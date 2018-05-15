@@ -1,0 +1,5 @@
+D:\Projects\TestIOCP\TestIOCP\bin\Debug\TestIOCP.exe
+D:\Projects\TestIOCP\TestIOCP\bin\Debug\TestIOCP.pdb
+D:\Projects\TestIOCP\TestIOCP\obj\x86\Debug\TestIOCP.exe
+D:\Projects\TestIOCP\TestIOCP\obj\x86\Debug\TestIOCP.pdb
+D:\Projects\TestIOCP\TestIOCP\obj\x86\Debug\TestIOCP.csprojResolveAssemblyReference.cache

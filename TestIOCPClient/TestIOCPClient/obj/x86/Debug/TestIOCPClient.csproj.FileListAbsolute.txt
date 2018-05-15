@@ -1,0 +1,5 @@
+D:\Projects\TestIOCPClient\TestIOCPClient\bin\Debug\TestIOCPClient.exe
+D:\Projects\TestIOCPClient\TestIOCPClient\bin\Debug\TestIOCPClient.pdb
+D:\Projects\TestIOCPClient\TestIOCPClient\obj\x86\Debug\TestIOCPClient.exe
+D:\Projects\TestIOCPClient\TestIOCPClient\obj\x86\Debug\TestIOCPClient.pdb
+D:\Projects\TestIOCPClient\TestIOCPClient\obj\x86\Debug\TestIOCPClient.csprojResolveAssemblyReference.cache
