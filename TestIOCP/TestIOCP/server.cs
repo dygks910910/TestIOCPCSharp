@@ -11,9 +11,8 @@ namespace TestIOCP
         static int Main(String[] args)
         {
             AsynchronousSocketListener server = new AsynchronousSocketListener();
-
+            server.StartListening();
             //server.ConnectToAGVServer();
-            server.StartListeningCallBack();
 
             return 0;
         }
