@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 using System.Net;
-using IOCPServer;
-namespace TestIOCPClient
+namespace IOCPServer
 {
-    class clientClass
+    class ClientClass
     {
         private NetworkStream stream = null;
-        public TcpClient client{get;private set;}
-        private const int PORT_NO = 11000;
+        public TcpClient client { get; private set; }
+        private const int PORT_NO = 9999;
         private const string HOST = "DESKTOP-F8O7NVP";
         public void Send(string msg)
         {
@@ -43,11 +42,11 @@ namespace TestIOCPClient
         {
             try
             {
-                if(client != null)
+                if (client != null)
                 {
                     client.Close();
                 }
-                if(stream != null)
+                if (stream != null)
                 {
                     stream.Close();
                 }
@@ -70,12 +69,12 @@ namespace TestIOCPClient
         }
         public void Run()
         {
-            clientClass client = new clientClass();
+            ClientClass client = new ClientClass();
 
             string msg;
             while (true)
             {
-                if (client.client != null && YH_Util.SocketConnected(client.client.Client))
+                if (client.client != null && client.client.Connected)
                 {
                     msg = Console.ReadLine();
                     msg += "<EOF>";

@@ -10,10 +10,10 @@ namespace IOCPServer
     {
         static int Main(String[] args)
         {
-            AsynchronousSocketListener server = new AsynchronousSocketListener();
+            Server server = new Server();
             server.StartListening();
             //server.ConnectToAGVServer();
-
+            
             return 0;
         }
     }

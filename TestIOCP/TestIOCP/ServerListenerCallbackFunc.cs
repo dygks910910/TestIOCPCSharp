@@ -8,7 +8,7 @@ using System.Threading;
 using System.IO;
 namespace IOCPServer
 {
-    partial class AsynchronousSocketListener
+    partial class Server
     {
 
        #region callback함수들
@@ -47,8 +47,13 @@ namespace IOCPServer
             // Retrieve the state object and the handler socket  
             // from the asynchronous state object.  
             StateObject state = (StateObject)ar.AsyncState;
-            Socket handler = state.workSocket;
 
+            Socket handler = state.workSocket;
+            if (!YH_Util.SocketConnected(handler))
+            {
+                handler.Close();
+                return;
+            }
             // Read data from the client socket.   
             int bytesRead = handler.EndReceive(ar);
 

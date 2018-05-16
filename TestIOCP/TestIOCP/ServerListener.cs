@@ -9,8 +9,10 @@ using System.IO;
 using System.Threading.Tasks;
 namespace IOCPServer
 {
-    partial class AsynchronousSocketListener
+    partial class Server
     {
+        private const int LISTEN_PORT = 11000;
+        private const int AGV_SERVER_PORT = 9999;
         public class StateObject
         {
             // Client  socket.  
@@ -22,7 +24,7 @@ namespace IOCPServer
             // Received data string.  
             public StringBuilder sb = new StringBuilder();
         }
-
+        private static object lockObject = new object();
         #region socket정보저장배열변수
         public static List<StateObject> clientList = new List<StateObject>();
         public List<TcpClient> serverList = new List<TcpClient>();
@@ -39,26 +41,21 @@ namespace IOCPServer
             // Establish the local endpoint for the socket.  
             // The DNS name of the computer  
 
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+            IPHostEntry ipHostInfo = YH_Util.GetLoopbackIPHostEntry();
+            IPAddress ipAddress = YH_Util.GetLoopbackIPAddress();
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, LISTEN_PORT);
 
-            Console.WriteLine(Dns.GetHostName());
-            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
-            foreach (IPAddress addr in localIPs)
-            {
-                if (addr.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    Console.WriteLine(addr);
-                }
-            }
-            Console.WriteLine(localEndPoint.Port);
+            Console.WriteLine(YH_Util.GetLoopbackHostName());
+            Console.WriteLine(YH_Util.GetLoopbackIPAddress());
+            Console.WriteLine(LISTEN_PORT);
+
 
             // Create a TCP/IP socket.  
             Socket listener = new Socket(ipAddress.AddressFamily,
                 SocketType.Stream, ProtocolType.Tcp);
 
-            Task.Factory.StartNew(new Action(CheckThreadPoolReceivedData));
+            YH_Util.WorkingInThreadPool(CheckThreadPoolReceivedData);
+            //YH_Util.WorkingInThreadPool(ConnectToOtherServer);
             // Bind the socket to the local endpoint and listen for incoming connections.  
             try
             {
@@ -90,7 +87,7 @@ namespace IOCPServer
             Console.Read();
 
         }
-        public AsynchronousSocketListener()
+        public Server()
         {
         }
         private static void Send(Socket handler, String data)
@@ -122,28 +119,69 @@ namespace IOCPServer
             responseData = System.Text.Encoding.ASCII.GetString(state.buffer, 0, StateObject.BufferSize);
         }
         //항상 돌아가는 스레드(recv할 데이터가 있는지 항시체크.)
+
+        #region 스레드함수.
+        //Read only
         public void CheckThreadPoolReceivedData()
         {
             int availableByte = 0;
             StateObject tmpState;
+            Socket tmpSocket;
             while(true)
             {
+                Console.WriteLine(clientList.Count);
+
+                if (clientList != null)
                 for(int i = 0 ; i < clientList.Count; ++i)
                 {
+                    tmpSocket = clientList[i].workSocket;
                     //바이트수를 받아옴.
-                    availableByte = clientList[i].workSocket.Available;
-                    if (availableByte > 0)
+                    if (tmpSocket.Connected)
                     {
-                        tmpState = new StateObject();
-                        tmpState.workSocket = clientList[i].workSocket;
-                        Console.WriteLine("데이터를 받음");
-                        clientList[i].workSocket.BeginReceive(clientList[i].buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback(ReadCallback), clientList[i]);
+                        availableByte = tmpSocket.Available;
+                        if (availableByte > 0)
+                        {
+                            tmpState = new StateObject();
+                            tmpState.workSocket = tmpSocket;
+                            //Console.WriteLine("데이터를 받음");
+                            if (tmpState.workSocket.Connected)
+                            {
+                                clientList[i].workSocket.BeginReceive(clientList[i].buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback(ReadCallback), clientList[i]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int tmp = 0;
+                        tmp = clientList.FindIndex(x => x.workSocket.Equals(tmpSocket));
+                        clientList.RemoveAt(tmp);
+
                     }
                 }
+                //for (int i = 0; i < serverList.Count; ++i)
+                //{
+                //    availableByte = serverList[i].Client.Available;
+                //    if (availableByte > 0)
+                //    {
+                //        tmpState = new StateObject();
+                //        tmpState.workSocket = serverList[i].Client;
+                //        //Console.WriteLine("데이터를 받음");
+                //        serverList[i].Client.BeginReceive(tmpState.buffer, 0, StateObject.BufferSize, 0,
+                //new AsyncCallback(ReadCallback), tmpState);
+                //    }
+                //}
 
             }
 
         }
+
+        //write,공유자원 접근(serverList).
+        public void ConnectToOtherServer()
+        {
+            serverList.Add(new TcpClient(YH_Util.GetLoopbackHostName(), 9999));
+        }
+        #endregion
+
     }
 }
