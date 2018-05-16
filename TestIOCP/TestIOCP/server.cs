@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.IO;
 // State object for reading client data asynchronously  
-namespace TestIOCP
+namespace IOCPServer
 {
     public class main
     {

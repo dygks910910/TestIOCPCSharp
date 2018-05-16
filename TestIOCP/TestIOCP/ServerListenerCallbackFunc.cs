@@ -5,72 +5,13 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Threading.Tasks;
 using System.IO;
-namespace TestIOCP
+namespace IOCPServer
 {
     partial class AsynchronousSocketListener
     {
-        public void StartListening()
-        {
-            // Data buffer for incoming data.  
-            byte[] bytes = new Byte[1024];
 
-            // Establish the local endpoint for the socket.  
-            // The DNS name of the computer  
-
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
-
-            Console.WriteLine(Dns.GetHostName());
-            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
-            foreach (IPAddress addr in localIPs)
-            {
-                if (addr.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    Console.WriteLine(addr);
-                }
-            }
-            Console.WriteLine(localEndPoint.Port);
-
-            // Create a TCP/IP socket.  
-            Socket listener = new Socket(ipAddress.AddressFamily,
-                SocketType.Stream, ProtocolType.Tcp);
-
-            Task.Factory.StartNew(new Action(CheckThreadPoolReceivedData));
-            // Bind the socket to the local endpoint and listen for incoming connections.  
-            try
-            {
-                listener.Bind(localEndPoint);
-                listener.Listen(100);
-
-                while (true)
-                {
-                    // Set the event to nonsignaled state.  
-                    allDone.Reset();
-
-                    // Start an asynchronous socket to listen for connections.  
-                    Console.WriteLine("Waiting for a connection...");
-                    listener.BeginAccept(
-                        new AsyncCallback(AcceptCallback),
-                        listener);
-
-                    // Wait until a connection is made before continuing.  
-                    allDone.WaitOne();
-                }
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-
-            Console.WriteLine("\nPress ENTER to continue...");
-            Console.Read();
-
-        }
-
+       #region callback함수들
         public static void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.  
@@ -89,9 +30,9 @@ namespace TestIOCP
             handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
 
-            String responseData = String.Empty;
-            responseData = System.Text.Encoding.ASCII.GetString(state.buffer, 0, StateObject.BufferSize);
-            Console.WriteLine(responseData);
+//             String responseData = String.Empty;
+//             responseData = System.Text.Encoding.ASCII.GetString(state.buffer, 0, StateObject.BufferSize);
+//             Console.WriteLine(responseData);
             //Send(handler, responseData);
         }
         public static void ReceiveCallBack()
@@ -127,7 +68,12 @@ namespace TestIOCP
 //                     Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
 //                         content.Length, content);
                     // Echo the data back to the client.  
-                    Send(handler, content);
+                    //Send(handler, content);
+                    Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
+                       content.Length, content);
+                    state.sb.Clear();
+
+                    
                 }
                 else
                 {
@@ -136,8 +82,8 @@ namespace TestIOCP
                     new AsyncCallback(ReadCallback), state);
 
                 }
-                Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
-                       content.Length, content);
+                
+
             }
         }
         private static void SendCallback(IAsyncResult ar)
@@ -159,6 +105,6 @@ namespace TestIOCP
                 Console.WriteLine(e.ToString());
             }
         }
-
+       #endregion
     }
 }

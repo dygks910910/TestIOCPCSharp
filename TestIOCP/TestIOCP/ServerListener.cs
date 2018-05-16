@@ -6,8 +6,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.IO;
-
-namespace TestIOCP
+using System.Threading.Tasks;
+namespace IOCPServer
 {
     partial class AsynchronousSocketListener
     {
@@ -22,12 +22,74 @@ namespace TestIOCP
             // Received data string.  
             public StringBuilder sb = new StringBuilder();
         }
+
+        #region socket정보저장배열변수
         public static List<StateObject> clientList = new List<StateObject>();
         public List<TcpClient> serverList = new List<TcpClient>();
+        #endregion
+
         // Thread signal.  
         public static ManualResetEvent allDone = new ManualResetEvent(false);
 
+        public void StartListening()
+        {
+            // Data buffer for incoming data.  
+            byte[] bytes = new Byte[1024];
 
+            // Establish the local endpoint for the socket.  
+            // The DNS name of the computer  
+
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+
+            Console.WriteLine(Dns.GetHostName());
+            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
+            foreach (IPAddress addr in localIPs)
+            {
+                if (addr.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    Console.WriteLine(addr);
+                }
+            }
+            Console.WriteLine(localEndPoint.Port);
+
+            // Create a TCP/IP socket.  
+            Socket listener = new Socket(ipAddress.AddressFamily,
+                SocketType.Stream, ProtocolType.Tcp);
+
+            Task.Factory.StartNew(new Action(CheckThreadPoolReceivedData));
+            // Bind the socket to the local endpoint and listen for incoming connections.  
+            try
+            {
+                listener.Bind(localEndPoint);
+                listener.Listen(100);
+
+                while (true)
+                {
+                    // Set the event to nonsignaled state.  
+                    allDone.Reset();
+
+                    // Start an asynchronous socket to listen for connections.  
+                    Console.WriteLine("Waiting for a connection...");
+                    listener.BeginAccept(
+                        new AsyncCallback(AcceptCallback),
+                        listener);
+
+                    // Wait until a connection is made before continuing.  
+                    allDone.WaitOne();
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            Console.WriteLine("\nPress ENTER to continue...");
+            Console.Read();
+
+        }
         public AsynchronousSocketListener()
         {
         }
@@ -59,18 +121,24 @@ namespace TestIOCP
             String responseData = String.Empty;
             responseData = System.Text.Encoding.ASCII.GetString(state.buffer, 0, StateObject.BufferSize);
         }
+        //항상 돌아가는 스레드(recv할 데이터가 있는지 항시체크.)
         public void CheckThreadPoolReceivedData()
         {
-            int receivedData = 0;
+            int availableByte = 0;
+            StateObject tmpState;
             while(true)
             {
                 for(int i = 0 ; i < clientList.Count; ++i)
                 {
                     //바이트수를 받아옴.
-                    receivedData = clientList[i].workSocket.Available;
-                    if(receivedData > 0)
+                    availableByte = clientList[i].workSocket.Available;
+                    if (availableByte > 0)
                     {
+                        tmpState = new StateObject();
+                        tmpState.workSocket = clientList[i].workSocket;
                         Console.WriteLine("데이터를 받음");
+                        clientList[i].workSocket.BeginReceive(clientList[i].buffer, 0, StateObject.BufferSize, 0,
+                new AsyncCallback(ReadCallback), clientList[i]);
                     }
                 }
 
