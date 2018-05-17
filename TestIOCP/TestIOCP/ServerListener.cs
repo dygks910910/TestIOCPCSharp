@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.IO;
 using System.Threading.Tasks;
+using System.Timers;
 namespace IOCPServer
 {
     partial class Server
@@ -24,10 +25,12 @@ namespace IOCPServer
             // Received data string.  
             public StringBuilder sb = new StringBuilder();
         }
-        private static object lockObject = new object();
-        #region socket정보저장배열변수
-        public static List<StateObject> clientList = new List<StateObject>();
-        public List<TcpClient> serverList = new List<TcpClient>();
+        static ManualResetEvent manualEvent = new ManualResetEvent(false);
+
+        #region (공유리소스)
+        private static List<StateObject> clientList = new List<StateObject>();
+        private List<TcpClient> serverList = new List<TcpClient>();
+        System.Timers.Timer mTimer = new System.Timers.Timer();
         #endregion
 
         // Thread signal.  
@@ -55,6 +58,7 @@ namespace IOCPServer
                 SocketType.Stream, ProtocolType.Tcp);
 
             YH_Util.WorkingInThreadPool(CheckThreadPoolReceivedData);
+            StartTimer(HeartBeat, 1);
             //YH_Util.WorkingInThreadPool(ConnectToOtherServer);
             // Bind the socket to the local endpoint and listen for incoming connections.  
             try
@@ -99,29 +103,30 @@ namespace IOCPServer
             handler.BeginSend(byteData, 0, byteData.Length, 0,
                 new AsyncCallback(SendCallback), handler);
         }
-        public void ConnectToAGVServer()
-        {
-            Int32 port = 9999;
+        //public void ConnectToAGVServer()
+        //{
+        //    Int32 port = 9999;
 
 
-            serverList.Add(new TcpClient(Dns.GetHostName(), port));
-            TcpClient connectToAGVServer = new TcpClient(Dns.GetHostName(), port);
-            Send(connectToAGVServer.Client, "a");
+        //    serverList.Add(new TcpClient(Dns.GetHostName(), port));
+        //    TcpClient connectToAGVServer = new TcpClient(Dns.GetHostName(), port);
+        //    Send(connectToAGVServer.Client, "a");
 
 
-            // Create the state object.  
-            StateObject state = new StateObject();
-            state.workSocket = connectToAGVServer.Client;
-            connectToAGVServer.Client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback(ReadCallback), state);
+        //    // Create the state object.  
+        //    StateObject state = new StateObject();
+        //    state.workSocket = connectToAGVServer.Client;
+        //    connectToAGVServer.Client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+        //        new AsyncCallback(ReadCallback), state);
 
-            String responseData = String.Empty;
-            responseData = System.Text.Encoding.ASCII.GetString(state.buffer, 0, StateObject.BufferSize);
-        }
-        //항상 돌아가는 스레드(recv할 데이터가 있는지 항시체크.)
+        //    String responseData = String.Empty;
+        //    responseData = System.Text.Encoding.ASCII.GetString(state.buffer, 0, StateObject.BufferSize);
+        //}
 
         #region 스레드함수.
         //Read only
+        //항상 돌아가는 스레드(recv할 데이터가 있는지 항시체크.)
+        //clientList와 ServerList공유자원 read/write
         public void CheckThreadPoolReceivedData()
         {
             int availableByte = 0;
@@ -129,8 +134,6 @@ namespace IOCPServer
             Socket tmpSocket;
             while(true)
             {
-                Console.WriteLine(clientList.Count);
-
                 if (clientList != null)
                 for(int i = 0 ; i < clientList.Count; ++i)
                 {
@@ -153,10 +156,9 @@ namespace IOCPServer
                     }
                     else
                     {
-                        int tmp = 0;
-                        tmp = clientList.FindIndex(x => x.workSocket.Equals(tmpSocket));
-                        clientList.RemoveAt(tmp);
-
+                        //int tmp = 0;
+                        //tmp = clientList.FindIndex(x => x.workSocket.Equals(tmpSocket));
+                        //clientList.RemoveAt(tmp);
                     }
                 }
                 //for (int i = 0; i < serverList.Count; ++i)
@@ -177,11 +179,42 @@ namespace IOCPServer
         }
 
         //write,공유자원 접근(serverList).
-        public void ConnectToOtherServer()
+        public void ConnectToAGVServer()
         {
             serverList.Add(new TcpClient(YH_Util.GetLoopbackHostName(), 9999));
         }
-        #endregion
+        public void HeartBeat(object sender, ElapsedEventArgs e)
+        {
+            manualEvent.Reset();
+            Console.WriteLine("하트비트");
+            for (int i = 0; i < serverList.Count; ++i)
+           {
+               if(!YH_Util.SocketConnected(serverList[i].Client))
+               {
+                   //연결안되있다면?
+                   serverList.RemoveAt(i);
 
+               }
+           }
+            for (int i = 0; i < clientList.Count; ++i)
+            {
+                if (!YH_Util.SocketConnected(clientList[i].workSocket))
+                {
+                    clientList.RemoveAt(i);
+                    Console.WriteLine("끊킴");
+                    //연결안되있다면?
+                }
+                
+            }
+            manualEvent.Set();
+
+        }
+        #endregion
+        private void StartTimer(Action<object, ElapsedEventArgs> doSomething,double sec)
+        {
+            mTimer.Interval = sec * 1000; //  *1000 밀리초 = 1초
+            mTimer.Elapsed += new ElapsedEventHandler(doSomething);
+            mTimer.Start();
+        }
     }
 }

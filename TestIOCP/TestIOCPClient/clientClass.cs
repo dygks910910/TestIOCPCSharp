@@ -71,7 +71,7 @@ namespace TestIOCPClient
         public void Run()
         {
             clientClass client = new clientClass();
-
+            
             string msg;
             while (true)
             {
