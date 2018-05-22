@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace IOCPServer
@@ -27,6 +25,7 @@ namespace IOCPServer
             }
             return returnVal;
         }
+
         public static string GetLoopbackHostName()
         {
             return Dns.GetHostName();
@@ -55,6 +54,20 @@ namespace IOCPServer
                     return false;
                 }
             }
+        }
+
+
+        public static void YH_Exception_Form(Exception ex)
+        {
+            string str = string.Format("{0}\n\n{1}\n\n{2}\n\n{3}\n\n{4}\n\n{5}",
+           MethodBase.GetCurrentMethod().Name
+           , ex.StackTrace
+           , ex.TargetSite
+           , ex.Data
+           , ex.InnerException
+           , ex.Source
+           );
+            Console.WriteLine(str);
         }
     }
 }

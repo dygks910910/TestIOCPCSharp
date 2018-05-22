@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.IO;
-
+using System.Threading.Tasks;
 // State object for reading client data asynchronously  
 namespace IOCPServer
 {
@@ -11,7 +7,9 @@ namespace IOCPServer
     {
         static int Main(String[] args)
         {
+            ConsoleClient.Client slave = new ConsoleClient.Client();
             Server server = new Server();
+            Task.Factory.StartNew(new Action(slave.Run));
             server.StartListening();
             return 0;
         }

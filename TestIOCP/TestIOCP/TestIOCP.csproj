@@ -62,11 +62,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientClass.cs" />
+    <Compile Include="Client.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="ServerListener.cs" />
-    <Compile Include="server.cs" />
+    <Compile Include="serverMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServerListenerCallbackFunc.cs" />
     <Compile Include="YH_Util.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

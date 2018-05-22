@@ -5,3 +5,10 @@ D:\Projects\ConsoleClient\ConsoleClient\bin\Debug\ConsoleClient.exe
 D:\Projects\ConsoleClient\ConsoleClient\bin\Debug\ConsoleClient.pdb
 D:\Projects\ConsoleClient\ConsoleClient\obj\Debug\ConsoleClient.exe
 D:\Projects\ConsoleClient\ConsoleClient\obj\Debug\ConsoleClient.pdb
+D:\Projects\git\ConsoleClient\ConsoleClient\bin\Debug\ConsoleClient.exe.config
+D:\Projects\git\ConsoleClient\ConsoleClient\bin\Debug\ConsoleClient.exe
+D:\Projects\git\ConsoleClient\ConsoleClient\bin\Debug\ConsoleClient.pdb
+D:\Projects\git\ConsoleClient\ConsoleClient\obj\Debug\ConsoleClient.csprojAssemblyReference.cache
+D:\Projects\git\ConsoleClient\ConsoleClient\obj\Debug\ConsoleClient.csproj.CoreCompileInputs.cache
+D:\Projects\git\ConsoleClient\ConsoleClient\obj\Debug\ConsoleClient.exe
+D:\Projects\git\ConsoleClient\ConsoleClient\obj\Debug\ConsoleClient.pdb

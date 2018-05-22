@@ -1,29 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IOCPServer;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Timers;
-
-
 namespace ConsoleClient
 {
-
-    enum Command
-    {
-        Login,
-        Logout,
-        Message,
-        List,
-        Null
-    }
-
+    //agv에 접속하는 Client.
     class Client
     {
         private const string SERVER_IP = "127.0.0.1";
-        private const int SERVER_PORT = 11000;
+        private const int SERVER_PORT = 9999;
         private Socket clientSocket; //The main client socket
         private string strName = "client";      //Name by which the user logs into the room
 
@@ -45,9 +31,9 @@ namespace ConsoleClient
                 //Send it to the server
                 clientSocket.BeginSend(byteData, 0, byteData.Length, SocketFlags.None, new AsyncCallback(OnSend), null);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Console.WriteLine("서버에 메시지를 보낼수 없습니다. SendStr()");
+                YH_Util.YH_Exception_Form(e);
                 Connect();
             }
         }
@@ -61,6 +47,7 @@ namespace ConsoleClient
             { }
             catch (Exception ex)
             {
+                YH_Util.YH_Exception_Form(ex);
                 Console.WriteLine(ex.Message + "OnSend()");
             }
         }
@@ -108,7 +95,8 @@ namespace ConsoleClient
             { }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message+ "OnReceive()");
+                YH_Util.YH_Exception_Form(ex);
+
             }
         }
 
@@ -130,7 +118,7 @@ namespace ConsoleClient
             { }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message + "CloseClient()");
+                YH_Util.YH_Exception_Form(ex);
             }
         }
         private void Connect()
@@ -153,7 +141,8 @@ namespace ConsoleClient
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message + "Connect()");
+                YH_Util.YH_Exception_Form(ex);
+
             }
         }
         private void OnConnect(IAsyncResult ar)
@@ -175,7 +164,8 @@ namespace ConsoleClient
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message + "Connect()");
+                YH_Util.YH_Exception_Form(ex);
+
             }
         }
 
@@ -190,19 +180,6 @@ namespace ConsoleClient
             timer.Interval = 1000; //1초
             timer.Elapsed += new ElapsedEventHandler(TmpTimerElapsed);
             timer.Start();
-            while (true)
-            {
-                try
-                {
-                    
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message+"Main()");
-                    Connect();
-                }
-            }
-           
         }
     }
 }

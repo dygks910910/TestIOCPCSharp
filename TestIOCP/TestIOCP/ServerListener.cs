@@ -1,25 +1,13 @@
-﻿using System;
+﻿using ConsoleClient;
+using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.IO;
-using System.Threading.Tasks;
-using System.Timers;
 
 namespace IOCPServer
 {
-    enum Command
-    {
-        Login,     
-        Logout,     
-        Message,    
-        List,      
-        Null       
-    }
+
     class Server
     {
         struct ClientInfo
@@ -30,7 +18,7 @@ namespace IOCPServer
         byte[] byteData = new byte[1024];
         List<ClientInfo> clientList = new List<ClientInfo>();
         Socket listenSocket;
-        string txtLog;
+        //string txtLog;
         private const int LISTEN_PORT = 11000;
         private const int AGV_SERVER_PORT = 9999;
        
@@ -54,11 +42,10 @@ namespace IOCPServer
                     listenSocket.BeginAccept(new AsyncCallback(OnAccept), null);
                     acceptDone.WaitOne();
                 }
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                YH_Util.YH_Exception_Form(ex);
             }
         }
         private void OnAccept(IAsyncResult ar)
@@ -75,7 +62,7 @@ namespace IOCPServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                YH_Util.YH_Exception_Form(ex);
             }
         }
 
@@ -166,7 +153,7 @@ namespace IOCPServer
                                 new AsyncCallback(OnSend), clientInfo.socket);
                         }
                     }
-                    txtLog += msgToSend.strMessage + "\r\n";
+                   // txtLog += msgToSend.strMessage + "\r\n";
                 }
 
                 if (msgReceived.cmdCommand != Command.Logout)
@@ -176,8 +163,8 @@ namespace IOCPServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                for(int i = 0; i < clientList.Count; ++i)
+                YH_Util.YH_Exception_Form(ex);
+                for (int i = 0; i < clientList.Count; ++i)
                 {
                     if (!YH_Util.SocketConnected(clientList[i].socket))
                     {
@@ -198,7 +185,7 @@ namespace IOCPServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                YH_Util.YH_Exception_Form(ex);
             }
         }
         public Server()

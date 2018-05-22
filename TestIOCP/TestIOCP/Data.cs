@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
-using System.IO;
-namespace IOCPServer
+using System.Threading.Tasks;
+
+namespace ConsoleClient
 {
+    enum Command
+    {
+        Login,
+        Logout,
+        Message,
+        List,
+        Null
+    }
     class Data
     {
         public Data()
@@ -20,29 +26,29 @@ namespace IOCPServer
         //Converts the bytes into an object of type Data
         public Data(byte[] data)
         {
-            //처음4바이트는 cmdCommand로사용
+            //The first four bytes are for the Command
             this.cmdCommand = (Command)BitConverter.ToInt32(data, 0);
 
-            //다음4바이트 이름길이변수로 사용
+            //The next four store the length of the name
             int nameLen = BitConverter.ToInt32(data, 4);
 
-            //다음4바이트는 메시지길이.
+            //The next four store the length of the message
             int msgLen = BitConverter.ToInt32(data, 8);
 
-            //메모리가 채워졌는지 확인.
+            //This check makes sure that strName has been passed in the array of bytes
             if (nameLen > 0)
                 this.strName = Encoding.UTF8.GetString(data, 12, nameLen);
             else
                 this.strName = null;
 
-            //메시지가 널인지 체크
+            //This checks for a null message field
             if (msgLen > 0)
                 this.strMessage = Encoding.UTF8.GetString(data, 12 + nameLen, msgLen);
             else
                 this.strMessage = null;
         }
 
-        //데이터구조를 바이트배열로 바꿔줌.
+        //Converts the Data structure into an array of bytes
         public byte[] ToByte()
         {
             List<byte> result = new List<byte>();
