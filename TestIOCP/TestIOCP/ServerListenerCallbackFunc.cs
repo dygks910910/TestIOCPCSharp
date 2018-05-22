@@ -8,108 +8,73 @@ using System.Threading;
 using System.IO;
 namespace IOCPServer
 {
-    partial class Server
+    class Data
     {
-
-       #region callback함수들
-        public static void AcceptCallback(IAsyncResult ar)
+        public Data()
         {
-            // Signal the main thread to continue.  
-            allDone.Set();
-
-            // Get the socket that handles the client request.  
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
-            // Create the state object.  
-            StateObject state = new StateObject();
-            state.workSocket = handler;
-
-            clientList.Add(state);
-
-
-            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback(ReadCallback), state);
-
-//             String responseData = String.Empty;
-//             responseData = System.Text.Encoding.ASCII.GetString(state.buffer, 0, StateObject.BufferSize);
-//             Console.WriteLine(responseData);
-            //Send(handler, responseData);
+            this.cmdCommand = Command.Null;
+            this.strMessage = null;
+            this.strName = null;
         }
-        public static void ReceiveCallBack()
+
+        //Converts the bytes into an object of type Data
+        public Data(byte[] data)
         {
+            //처음4바이트는 cmdCommand로사용
+            this.cmdCommand = (Command)BitConverter.ToInt32(data, 0);
 
+            //다음4바이트 이름길이변수로 사용
+            int nameLen = BitConverter.ToInt32(data, 4);
 
+            //다음4바이트는 메시지길이.
+            int msgLen = BitConverter.ToInt32(data, 8);
+
+            //메모리가 채워졌는지 확인.
+            if (nameLen > 0)
+                this.strName = Encoding.UTF8.GetString(data, 12, nameLen);
+            else
+                this.strName = null;
+
+            //메시지가 널인지 체크
+            if (msgLen > 0)
+                this.strMessage = Encoding.UTF8.GetString(data, 12 + nameLen, msgLen);
+            else
+                this.strMessage = null;
         }
-        public static void ReadCallback(IAsyncResult ar)
+
+        //데이터구조를 바이트배열로 바꿔줌.
+        public byte[] ToByte()
         {
-            String content = String.Empty;
+            List<byte> result = new List<byte>();
 
-            // Retrieve the state object and the handler socket  
-            // from the asynchronous state object.  
-            StateObject state = (StateObject)ar.AsyncState;
+            //First four are for the Command
+            result.AddRange(BitConverter.GetBytes((int)cmdCommand));
 
-            Socket handler = state.workSocket;
-            if (!YH_Util.SocketConnected(handler))
-            {
-                handler.Close();
-                return;
-            }
-            // Read data from the client socket.   
-            int bytesRead = handler.EndReceive(ar);
+            //Add the length of the name
+            if (strName != null)
+                result.AddRange(BitConverter.GetBytes(strName.Length));
+            else
+                result.AddRange(BitConverter.GetBytes(0));
 
-            if (bytesRead > 0)
-            {
-                // There  might be more data, so store the data received so far.  
-                state.sb.Append(Encoding.ASCII.GetString(
-                    state.buffer, 0, bytesRead));
+            //Length of the message
+            if (strMessage != null)
+                result.AddRange(BitConverter.GetBytes(strMessage.Length));
+            else
+                result.AddRange(BitConverter.GetBytes(0));
 
-                // Check for end-of-file tag. If it is not there, read   
-                // more data.  
-                content = state.sb.ToString();
-                if (content.IndexOf("<EOF>") > -1)
-                {
-                    // All the data has been read from the   
-                    // client. Display it on the console.  
-//                     Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
-//                         content.Length, content);
-                    // Echo the data back to the client.  
-                    //Send(handler, content);
-                    Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
-                       content.Length, content);
-                    state.sb.Clear();
+            //Add the name
+            if (strName != null)
+                result.AddRange(Encoding.UTF8.GetBytes(strName));
 
-                    
-                }
-                else
-                {
-                    // Not all data received. Get more.  
-                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReadCallback), state);
+            //And, lastly we add the message text to our array of bytes
+            if (strMessage != null)
+                result.AddRange(Encoding.UTF8.GetBytes(strMessage));
 
-                }
-                
-
-            }
+            return result.ToArray();
         }
-        private static void SendCallback(IAsyncResult ar)
-        {
-            try
-            {
-                // Retrieve the socket from the state object.  
-                Socket handler = (Socket)ar.AsyncState;
 
-                // Complete sending the data to the remote device.  
-                int bytesSent = handler.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to client.", bytesSent);
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-        }
-       #endregion
+        public string strName;      //Name by which the client logs into the room
+        public string strMessage;   //Message text
+        public Command cmdCommand;  //Command type (login, logout, send message, etcetera)
     }
 }

@@ -2,4 +2,5 @@ D:\Projects\git\TestIOCP\TestIOCP\bin\x64\Debug\TestIOCP.exe
 D:\Projects\git\TestIOCP\TestIOCP\bin\x64\Debug\TestIOCP.pdb
 D:\Projects\git\TestIOCP\TestIOCP\obj\x64\Debug\TestIOCP.exe
 D:\Projects\git\TestIOCP\TestIOCP\obj\x64\Debug\TestIOCP.pdb
-D:\Projects\git\TestIOCP\TestIOCP\obj\x64\Debug\TestIOCP.csprojResolveAssemblyReference.cache
+D:\Projects\git\TestIOCP\TestIOCP\obj\x64\Debug\TestIOCP.csprojAssemblyReference.cache
+D:\Projects\git\TestIOCP\TestIOCP\obj\x64\Debug\TestIOCP.csproj.CoreCompileInputs.cache

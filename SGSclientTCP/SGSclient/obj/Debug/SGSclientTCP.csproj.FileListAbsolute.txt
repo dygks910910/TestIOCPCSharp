@@ -1,0 +1,10 @@
+C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\bin\Debug\SGSclient.exe
+C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\bin\Debug\SGSclient.pdb
+C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclientTCP.csprojAssemblyReference.cache
+C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclient.SGSClient.resources
+C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclient.LoginForm.resources
+C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclient.Properties.Resources.resources
+C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclientTCP.csproj.GenerateResource.cache
+C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclientTCP.csproj.CoreCompileInputs.cache
+C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclient.exe
+C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclient.pdb
