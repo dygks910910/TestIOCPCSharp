@@ -28,7 +28,7 @@ namespace IOCPServer
             public string strName;  //Name by which the user logged into the chat room
         }
         byte[] byteData = new byte[1024];
-        ArrayList clientList = new ArrayList();
+        List<ClientInfo> clientList = new List<ClientInfo>();
         Socket listenSocket;
         string txtLog;
         private const int LISTEN_PORT = 11000;
@@ -44,7 +44,7 @@ namespace IOCPServer
                                           SocketType.Stream,
                                           ProtocolType.Tcp);
 
-                IPEndPoint ipEndPoint = new IPEndPoint(YH_Util.GetLoopbackIPAddress(),LISTEN_PORT);
+                IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Any,LISTEN_PORT);
 
                 listenSocket.Bind(ipEndPoint);
                 listenSocket.Listen(4);
@@ -111,8 +111,6 @@ namespace IOCPServer
                         break;
 
                     case Command.Logout:
-
-
                         int nIndex = 0;
                         foreach (ClientInfo client in clientList)
                         {
@@ -179,6 +177,15 @@ namespace IOCPServer
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                for(int i = 0; i < clientList.Count; ++i)
+                {
+                    if (!YH_Util.SocketConnected(clientList[i].socket))
+                    {
+                        clientList.Remove(clientList[i]);
+                        break;
+                    }
+                }
+                
             }
         }
 

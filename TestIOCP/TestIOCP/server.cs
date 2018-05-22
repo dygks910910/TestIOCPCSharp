@@ -13,8 +13,6 @@ namespace IOCPServer
         {
             Server server = new Server();
             server.StartListening();
-            //server.ConnectToAGVServer();
-            
             return 0;
         }
     }

@@ -8,3 +8,13 @@ C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclient
 C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclientTCP.csproj.CoreCompileInputs.cache
 C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclient.exe
 C:\Users\john park\Downloads\TCP Chat\SGSclientTCP\SGSclient\obj\Debug\SGSclient.pdb
+D:\Projects\git\SGSclientTCP\SGSclient\bin\Debug\SGSclient.exe
+D:\Projects\git\SGSclientTCP\SGSclient\bin\Debug\SGSclient.pdb
+D:\Projects\git\SGSclientTCP\SGSclient\obj\Debug\SGSclientTCP.csprojAssemblyReference.cache
+D:\Projects\git\SGSclientTCP\SGSclient\obj\Debug\SGSclient.SGSClient.resources
+D:\Projects\git\SGSclientTCP\SGSclient\obj\Debug\SGSclient.LoginForm.resources
+D:\Projects\git\SGSclientTCP\SGSclient\obj\Debug\SGSclient.Properties.Resources.resources
+D:\Projects\git\SGSclientTCP\SGSclient\obj\Debug\SGSclientTCP.csproj.GenerateResource.cache
+D:\Projects\git\SGSclientTCP\SGSclient\obj\Debug\SGSclientTCP.csproj.CoreCompileInputs.cache
+D:\Projects\git\SGSclientTCP\SGSclient\obj\Debug\SGSclient.exe
+D:\Projects\git\SGSclientTCP\SGSclient\obj\Debug\SGSclient.pdb

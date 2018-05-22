@@ -1,0 +1,7 @@
+D:\Projects\ConsoleClient\ConsoleClient\obj\Debug\ConsoleClient.csprojAssemblyReference.cache
+D:\Projects\ConsoleClient\ConsoleClient\obj\Debug\ConsoleClient.csproj.CoreCompileInputs.cache
+D:\Projects\ConsoleClient\ConsoleClient\bin\Debug\ConsoleClient.exe.config
+D:\Projects\ConsoleClient\ConsoleClient\bin\Debug\ConsoleClient.exe
+D:\Projects\ConsoleClient\ConsoleClient\bin\Debug\ConsoleClient.pdb
+D:\Projects\ConsoleClient\ConsoleClient\obj\Debug\ConsoleClient.exe
+D:\Projects\ConsoleClient\ConsoleClient\obj\Debug\ConsoleClient.pdb
